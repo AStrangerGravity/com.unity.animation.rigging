@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace UnityEngine.Animations.Rigging
@@ -108,6 +109,10 @@ namespace UnityEngine.Animations.Rigging
         /// </summary>
         public static OnRemoveBoneRendererCallback onRemoveBoneRenderer;
 
+        public delegate void GizmosCallback(BoneRenderer rend);
+
+        public static GizmosCallback onGizmos;
+
         void OnEnable()
         {
             ExtractBones();
@@ -118,6 +123,13 @@ namespace UnityEngine.Animations.Rigging
         {
             onRemoveBoneRenderer?.Invoke(this);
         }
+        
+#if UNITY_EDITOR
+        private void OnDrawGizmos()
+        {
+            onGizmos?.Invoke(this);
+        }
+#endif
 
         /// <summary>
         /// Invalidate and Rebuild bones and tip bones from Transform references.
@@ -200,4 +212,5 @@ namespace UnityEngine.Animations.Rigging
         }
 #endif // UNITY_EDITOR
     }
+
 }

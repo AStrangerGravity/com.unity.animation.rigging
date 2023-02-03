@@ -113,10 +113,12 @@ namespace UnityEditor.Animations.Rigging
         {
             BoneRenderer.onAddBoneRenderer += OnAddBoneRenderer;
             BoneRenderer.onRemoveBoneRenderer += OnRemoveBoneRenderer;
+            BoneRenderer.onGizmos += _ => DrawSkeletons();
             SceneVisibilityManager.visibilityChanged += OnVisibilityChanged;
             EditorApplication.hierarchyChanged += OnHierarchyChanged;
 
-            SceneView.duringSceneGui += DrawSkeletons;
+            SceneView.duringSceneGui += _ => DrawSkeletons();
+            
 
             s_VisibleLayersCache = Tools.visibleLayers;
         }
@@ -273,7 +275,7 @@ namespace UnityEditor.Animations.Rigging
                 new Vector4(start.x, start.y, start.z, 1f));
         }
 
-        static void DrawSkeletons(SceneView sceneview)
+        static void DrawSkeletons()
         {
             if (Tools.visibleLayers != s_VisibleLayersCache)
             {
@@ -312,7 +314,7 @@ namespace UnityEditor.Animations.Rigging
                     for (var j = 0; j < boneRenderer.bones.Length; j++)
                     {
                         var bone = boneRenderer.bones[j];
-                        if (bone.first == null || bone.second == null)
+                        if (bone.first == null || bone.second == null || !bone.second.gameObject.activeInHierarchy)
                             continue;
 
                         DoBoneRender(bone.first, bone.second, shape, color, size);
@@ -321,7 +323,7 @@ namespace UnityEditor.Animations.Rigging
                     for (var k = 0; k < boneRenderer.tips.Length; k++)
                     {
                         var tip = boneRenderer.tips[k];
-                        if (tip == null)
+                        if (tip == null || !tip.gameObject.activeInHierarchy)
                             continue;
 
                         DoBoneRender(tip, null, shape, color, size);
